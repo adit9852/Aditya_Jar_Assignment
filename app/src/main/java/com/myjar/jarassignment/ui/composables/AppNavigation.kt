@@ -1,6 +1,5 @@
 package com.myjar.jarassignment.ui.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,6 +41,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.myjar.jarassignment.data.model.ComputerItem
 import com.myjar.jarassignment.ui.vm.JarViewModel
+import java.util.Locale
 
 @Composable
 fun AppNavigation(
@@ -50,7 +49,7 @@ fun AppNavigation(
     viewModel: JarViewModel,
 ) {
     val navController = rememberNavController()
-    val navigate = remember { mutableStateOf<String>("") }
+    val navigate = remember { mutableStateOf("") }
 
     NavHost(modifier = modifier, navController = navController, startDestination = "item_list") {
         composable("item_list") {
@@ -110,10 +109,13 @@ fun ItemListScreen(
             }
 
             uiState.error != null -> {
-                ErrorScreen(
-                    error = uiState.error,
-                    onRetry = viewModel::retry
-                )
+                val error = uiState.error
+                if (error != null) {
+                    ErrorScreen(
+                        error = error,
+                        onRetry = viewModel::retry
+                    )
+                }
             }
 
             uiState.filteredItems.isEmpty() && uiState.searchQuery.isNotBlank() -> {
@@ -173,7 +175,7 @@ fun ItemCard(item: ComputerItem, onClick: () -> Unit) {
                 // Display relevant data fields
                 data.price?.let { price ->
                     Text(
-                        text = "Price: $${String.format("%.2f", price)}",
+                        text = "Price: $${String.format(Locale.US, "%.2f", price)}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
@@ -243,7 +245,7 @@ fun ItemDetailScreen(itemId: String?, viewModel: JarViewModel) {
             // Item data details
             item.data?.let { data ->
                 data.price?.let { price ->
-                    DetailRow(label = "Price", value = "$${String.format("%.2f", price)}")
+                    DetailRow(label = "Price", value = "$${String.format(Locale.US, "%.2f", price)}")
                 }
 
                 data.color?.let { color ->
